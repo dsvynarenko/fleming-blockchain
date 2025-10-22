@@ -1,11 +1,15 @@
+use crate::core::address::Address;
+use crate::core::state::State;
 use crate::core::{BlockHash, Transaction};
 use sha2::{Digest, Sha256};
+use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 #[derive(Debug, Clone)]
 pub struct Block {
     number: u64,                    // just a serial number of block
     transactions: Vec<Transaction>, // array of transactions
+    state: State,                   // FULL state of blockchain
     previous_hash: BlockHash,       // SHA-256 of previous block
     hash: BlockHash,                // SHA-256 of current block
     timestamp: u64,                 // block creation timestamp
@@ -15,12 +19,14 @@ impl Block {
     pub fn new(
         block_number: u64,
         transactions: Vec<Transaction>,
+        state: HashMap<Address, u64>,
         previous_hash: BlockHash,
     ) -> Self {
         let mut block = Block {
             number: block_number,
             transactions,
             timestamp: get_timestamp(),
+            state,
             previous_hash,
             hash: BlockHash([0; 32]),
         };
@@ -44,6 +50,15 @@ impl Block {
             hasher.update(tx.as_bytes());
         }
 
+        // Since HashMap has indeterministic order, lets convert it to an array and sort by keys
+        let mut state_entries: Vec<_> = self.state.iter().collect();
+        state_entries.sort_by(|a, b| a.0.cmp(b.0));
+
+        for (address, balance) in state_entries {
+            hasher.update(address.as_bytes());
+            hasher.update(balance.to_le_bytes());
+        }
+
         BlockHash(hasher.finalize().into())
     }
 
@@ -59,9 +74,18 @@ impl Block {
         &self.hash
     }
 
+    pub fn state(&self) -> &State {
+        &self.state
+    }
+
     #[cfg(test)]
-    pub fn tamper_transaction(&mut self, idx: usize, new_tx: String) {
+    pub fn tamper_transaction(&mut self, idx: usize, new_tx: Transaction) {
         self.transactions[idx] = new_tx;
+    }
+
+    #[cfg(test)]
+    pub fn tamper_state(&mut self, address: Address, balance: u64) {
+        self.state.insert(address, balance);
     }
 }
 

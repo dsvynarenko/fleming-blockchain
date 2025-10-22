@@ -1,11 +1,20 @@
 use crate::core::blockchain::Blockchain;
+use crate::core::Transaction;
 
 mod core;
 
 fn main() {
-    let mut blockchain = Blockchain::new();
-    blockchain.append_block(vec![String::from("A -> B: 10 FLMG")]);
-    blockchain.append_block(vec![String::from("C -> D: 5 FLMG")]);
+    let mut blockchain = Blockchain::new(vec![(String::from("A"), 50), (String::from("C"), 50)]);
+    blockchain.append_block(vec![Transaction::new(
+        String::from("A"),
+        String::from("B"),
+        10,
+    )]);
+    blockchain.append_block(vec![Transaction::new(
+        String::from("C"),
+        String::from("D"),
+        5,
+    )]);
 
     println!("Blockchain is valid: {}", blockchain.is_valid());
     println!("\nAll blocks:");

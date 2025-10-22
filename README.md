@@ -9,6 +9,7 @@ Fleming is a basic blockchain that demonstrates the fundamental concepts of dist
 - Cryptographic hashing (SHA-256)
 - Transaction management
 - Chain validation
+- Accounting-based model
 
 This project accompanies the "Designing Blockchain" article [series](https://dsvynarenko.hashnode.dev/series/designing-blockchain-rust) on HashNode.
 
@@ -17,6 +18,7 @@ This project accompanies the "Designing Blockchain" article [series](https://dsv
 - Block creation with cryptographic hashing
 - Transaction handling
 - Chain validation
+- Basic account-base model
 
 ## Prerequisites
 
@@ -36,8 +38,9 @@ cargo test
 
 ## Roadmap
 
-- [ ] Implement account based model and state management
-- [ ] Add more sophisticated transaction types
+- [X] Implement account based model and state management
+- [ ] Implement wallets and addresses
+- [ ] Implement state management with Merkle Trie
 - [ ] Implement basic RPC API
 - [ ] Add peer-to-peer networking
 - [ ] Implement proof-of-stake consensus
